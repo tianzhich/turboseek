@@ -132,7 +132,7 @@ export default function Home() {
   return (
     <>
       {/* <Header /> */}
-      <main className="h-full p-10 relative">
+      <main className="h-full flex-1 p-10 relative flex">
         {!showResult && (
           <Hero
             promptValue={promptValue}

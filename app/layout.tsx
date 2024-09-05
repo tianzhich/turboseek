@@ -46,7 +46,7 @@ export default function RootLayout({
       <head>
         <PlausibleProvider domain="turboseek.io" />
       </head>
-      <body className={`${inter.className} min-h-screen relative`}>{children}</body>
+      <body className={`${inter.className} flex min-h-screen flex-col justify-between`}>{children}</body>
     </html>
   );
 }
