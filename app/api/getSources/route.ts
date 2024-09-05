@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     const rawJSON = await response.json();
 
     const ExaJSONSchema = z.object({
-      autopromptString: z.string(),
+      autopromptString: z.optional(z.string()),
       results: z.array(z.object({ title: z.string(), url: z.string() })),
     });
 

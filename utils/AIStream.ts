@@ -11,10 +11,9 @@ export interface ChatGPTMessage {
   content: string;
 }
 
-export interface TogetherAIStreamPayload {
+export interface AIStreamPayload {
   model: string;
   messages: ChatGPTMessage[];
-
   stream: boolean;
 }
 
@@ -27,15 +26,15 @@ export interface TogetherAIStreamPayload {
 //   },
 // });
 
-export async function TogetherAIStream(payload: TogetherAIStreamPayload) {
+export async function AIStream(payload: AIStreamPayload) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
-  const res = await fetch("https://together.helicone.ai/v1/chat/completions", {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
     headers: {
       "Content-Type": "application/json",
       "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
-      Authorization: `Bearer ${process.env.TOGETHER_API_KEY ?? ""}`,
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ""}`,
     },
     method: "POST",
     body: JSON.stringify(payload),

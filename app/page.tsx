@@ -43,13 +43,18 @@ export default function Home() {
   };
 
   async function handleSourcesAndAnswer(question: string) {
+    let sources: any[] = [];
+    let propmptedQuestion = question;
     setIsLoadingSources(true);
     let sourcesResponse = await fetch("/api/getSources", {
       method: "POST",
       body: JSON.stringify({ question }),
     });
     if (sourcesResponse.ok) {
-      let { sources, autopromptString } = await sourcesResponse.json();
+      let sourcesResponseJSON = await sourcesResponse.json();
+      sources = sourcesResponseJSON.sources;
+      propmptedQuestion = sourcesResponseJSON.autopromptString || question;
+      console.info("propmptedQuestion ===>", propmptedQuestion);
 
       setSources(sources);
     } else {
@@ -62,7 +67,7 @@ export default function Home() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ question, sources }),
+      body: JSON.stringify({ question: propmptedQuestion, sources }),
     });
 
     if (!response.ok) {
@@ -126,8 +131,8 @@ export default function Home() {
 
   return (
     <>
-      <Header />
-      <main className="h-full px-4 pb-4">
+      {/* <Header /> */}
+      <main className="h-full p-10 relative">
         {!showResult && (
           <Hero
             promptValue={promptValue}
@@ -181,7 +186,7 @@ export default function Home() {
           </div>
         )}
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }
