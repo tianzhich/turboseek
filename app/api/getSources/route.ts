@@ -3,10 +3,12 @@ import { z } from "zod";
 
 let excludedSites = ["youtube.com"];
 
-let searchEngine: "bing" | "serper" = "serper";
+let searchEngine: "bing" | "serper" | "exa" = "exa";
 
 export async function POST(request: Request) {
   let { question } = await request.json();
+  let results: any[] = [];
+  let extra = {};
 
   if (searchEngine === "bing") {
     const BING_API_KEY = process.env["BING_API_KEY"];
@@ -40,12 +42,10 @@ export async function POST(request: Request) {
     const rawJSON = await response.json();
     const data = BingJSONSchema.parse(rawJSON);
 
-    let results = data.webPages.value.map((result) => ({
+    results = data.webPages.value.map((result) => ({
       name: result.name,
       url: result.url,
     }));
-
-    return NextResponse.json(results);
   } else if (searchEngine === "serper") {
     const SERPER_API_KEY = process.env["SERPER_API_KEY"];
     if (!SERPER_API_KEY) {
@@ -72,11 +72,45 @@ export async function POST(request: Request) {
 
     const data = SerperJSONSchema.parse(rawJSON);
 
-    let results = data.organic.map((result) => ({
+    results = data.organic.map((result) => ({
       name: result.title,
       url: result.link,
     }));
+  } else if (searchEngine === "exa") {
+    const EXA_API_KEY = process.env["EXA_API_KEY"];
+    if (!EXA_API_KEY) {
+      throw new Error("EXA_API_KEY is required");
+    }
 
-    return NextResponse.json(results);
+    const response = await fetch("https://api.exa.ai/search", {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        "x-api-key": EXA_API_KEY,
+      },
+      body: JSON.stringify({
+        query: question,
+        type: "auto",
+        numResults: 6,
+      }),
+    });
+
+    const rawJSON = await response.json();
+
+    const ExaJSONSchema = z.object({
+      autopromptString: z.string(),
+      results: z.array(z.object({ title: z.string(), url: z.string() })),
+    });
+
+    const data = ExaJSONSchema.parse(rawJSON);
+
+    results = data.results.map((result) => ({
+      name: result.title,
+      url: result.url,
+    }));
+    extra = { autopromptString: data.autopromptString };
   }
+
+  return NextResponse.json({ sources: results, ...extra });
 }

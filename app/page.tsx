@@ -49,7 +49,7 @@ export default function Home() {
       body: JSON.stringify({ question }),
     });
     if (sourcesResponse.ok) {
-      let sources = await sourcesResponse.json();
+      let { sources, autopromptString } = await sourcesResponse.json();
 
       setSources(sources);
     } else {
