@@ -67,7 +67,7 @@ export default function Home() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ question: propmptedQuestion, sources }),
+      body: JSON.stringify({ question, sources }),
     });
 
     if (!response.ok) {
@@ -132,7 +132,7 @@ export default function Home() {
   return (
     <>
       {/* <Header /> */}
-      <main className="h-full flex-1 p-10 relative flex">
+      <main className="relative flex h-full flex-1 p-10">
         {!showResult && (
           <Hero
             promptValue={promptValue}

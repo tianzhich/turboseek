@@ -3,6 +3,8 @@ import { Toaster, toast } from "react-hot-toast";
 import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import rehypeRaw from "rehype-raw";
+import rehypeExternalLinks from "rehype-external-links";
 
 export default function Answer({ answer }: { answer: string }) {
   return (
@@ -68,11 +70,18 @@ export default function Answer({ answer }: { answer: string }) {
           )}
         </div>
         <div className="flex flex-wrap content-center items-center gap-[15px]">
-          <div className="markdown prose w-full break-words text-base font-light leading-[152.5%] text-black">
+          <div className="markdown-container prose w-full text-base font-light leading-[152.5%] text-black">
             {answer ? (
               <Markdown
                 remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
+                rehypePlugins={[
+                  rehypeKatex,
+                  rehypeRaw,
+                  [
+                    rehypeExternalLinks,
+                    { target: "_blank", rel: "noopener noreferrer" },
+                  ],
+                ]}
               >
                 {answer.trim()}
               </Markdown>

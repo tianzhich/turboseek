@@ -26,23 +26,27 @@ export async function POST(request: Request) {
       }),
     });
     const rawJSON = await response.json();
-    results = rawJSON.results.map((r: any) => r.text);
+    results = rawJSON.results.map(({ text, url }: any) => ({ text, url }));
   } catch (e) {
     console.log("Error fetching text from source URLs: ", e);
   }
 
   const mainAnswerPrompt = `
-  Given a user question and some context, please write a clean, concise and accurate answer to the question based on the context. You will be given a set of related contexts to the question, each starting with a reference number like [[citation:x]], where x is a number. Please use the context when crafting your answer.
-
-  Your answer must be correct, accurate and written by an expert using an unbiased and professional tone. Please limit to 1024 tokens. Do not give any information that is not related to the question, and do not repeat. Say "information is missing on" followed by the related topic, if the given context do not provide sufficient information.
+  Given a user question and some context, please write a verbose answer with a lot of details to the question based on the context. You will be given a set of related contexts to the question, each starting with a reference number. Please use the context when crafting your answer. 
+  
+  You must respond back ALWAYS IN MARKDOWN. Say "No relevant results found.", if the given context do not provide sufficient information.
 
   Here are the set of contexts:
 
   <contexts>
-  ${results.map((result, index) => `[[citation:${index}]] ${result} \n\n`)}
+  ${results.map(({ text, url }: any, index) => `${url ? `[${index + 1}](${url})` : index + 1}. ${text} \n\n`)}
   </contexts>
 
-  Remember, don't blindly repeat the contexts verbatim and don't tell the user how you used the citations – just respond with the answer. It is very important for my career that you follow these instructions. Here is the user question:
+  Remember, you have to cite the answer using [[number](url)] notation so the user can know where the information is coming from.
+  Place these citations at the end of that particular sentence. You can cite the same sentence multiple times if it is relevant to the user's query like [number1][number2].
+  However you do not need to cite it using the same number. You can use different numbers to cite the same sentence multiple times. The number refers to the number of the search result (passed in the context) used to generate that part of the answer.
+  
+  It is very important for my career that you follow these instructions. Here is the user question:
     `;
 
   const payload: AIStreamPayload = {
