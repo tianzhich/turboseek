@@ -117,7 +117,8 @@ body {
 
 .markdown-container a {
   color: #000;
-  text-decoration: underline;
+  vertical-align: super;
+  font-size: 14px;
 }
 
 .markdown-container code {

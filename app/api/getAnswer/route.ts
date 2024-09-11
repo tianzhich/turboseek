@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   ${results.map(({ text, url }: any, index) => `${url ? `[${index + 1}](${url})` : index + 1}. ${text} \n\n`)}
   </contexts>
 
-  Remember, you have to cite the answer using [[number](url)] notation so the user can know where the information is coming from.
+  Remember, you have to cite the answer using [[number]](url) notation so the user can know where the information is coming from.
   Place these citations at the end of that particular sentence. You can cite the same sentence multiple times if it is relevant to the user's query like [number1][number2].
   However you do not need to cite it using the same number. You can use different numbers to cite the same sentence multiple times. The number refers to the number of the search result (passed in the context) used to generate that part of the answer.
   
